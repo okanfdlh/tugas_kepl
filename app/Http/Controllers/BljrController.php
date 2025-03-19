@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\UserModels;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
+use App\Rules\LoginCheck;
+use Illuminate\Support\Facades\Session;
 
 class BljrController extends Controller
 {
@@ -18,9 +19,6 @@ class BljrController extends Controller
     }
     function tampiladmin(){
     	return view('admin.dashboard');
-    }
-    function login(){
-    	return view('admin.login');
     }
     function listbarang(){
     	return view('admin.databarang');
@@ -45,38 +43,7 @@ class BljrController extends Controller
 
     function fregister(){
         $users = UserModels::all();
-        return view('admin.dashboard', compact('users')); 
-    }
-    
-
-    function editUser($id){
-        $users = UserModels::where('id', $id)->first();
-        $data = [
-            'user' => $users
-        ];
-        return view('admin.edituser', $data);
-    }
-    function deleteUser($id){
-        $user = UserModels::findOrFail($id);
-        $user -> delete();
-        return redirect()->route('register')->with('success', 'Data Berhasil di Hapus');
-    }
-    function updateUser(Request $request, $id){
-        $nama = $request -> input('nama');
-        $no_hp = $request -> input('no_hp');
-        $email = $request -> input('email');
-        $password = $request -> input('password');
-
-        $dataUpdate = [
-            'nama' => $nama,
-            'no_hp' => $no_hp,
-            'email' => $email,
-        ];
-        if($password){
-            $dataUpdate['password'] = hash::make($password);
-        }
-        UserModels::where('id',$id)->update($dataUpdate);
-        return redirect()->route('register')->with('success', 'Data Berhasil di Edit');
+        return view('admin.formregister', compact('users')); 
     }
 
     function daftar(Request $request){
@@ -95,7 +62,51 @@ class BljrController extends Controller
         UserModels::insert($dataInsert);
         
 
-        return redirect()->route('register')->with('success', 'Pendaftaran Berhasil');
+        return redirect()->route('formregister')->with('success', 'Pendaftaran Berhasil');
+    }
+
+    function login(){
+    	return view('admin.login');
+    }
+    
+    function proseslogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => ['required', new LoginCheck($request)],
+        ]);
+
+        return redirect()->route('dashboard.admin');
+    }
+
+    function editUser($id){
+        $users = UserModels::where('id', $id)->first();
+        $data = [
+            'user' => $users
+        ];
+        return view('admin.edituser', $data);
+    }
+    function deleteUser($id){
+        $user = UserModels::findOrFail($id);
+        $user -> delete();
+        return redirect()->route('formregister')->with('success', 'Data Berhasil di Hapus');
+    }
+    function updateUser(Request $request, $id){
+        $nama = $request -> input('nama');
+        $no_hp = $request -> input('no_hp');
+        $email = $request -> input('email');
+        $password = $request -> input('password');
+
+        $dataUpdate = [
+            'nama' => $nama,
+            'no_hp' => $no_hp,
+            'email' => $email,
+        ];
+        if($password){
+            $dataUpdate['password'] = hash::make($password);
+        }
+        UserModels::where('id',$id)->update($dataUpdate);
+        return redirect()->route('formregister')->with('success', 'Data Berhasil di Edit');
     }
 
     function listgempa(){
@@ -107,10 +118,12 @@ class BljrController extends Controller
         $gempaData = $data['Infogempa']['gempa'] ?? [];
         return view('admin.listgempa', compact('gempaData'));
     }
-}
-function tampiladmin(){
-    $users = UserModels::all(); // Ambil semua data dari tabel 'data_user'
-    return view('admin.dashboard', compact('users')); // Kirim variabel ke view
+
+    function logout()
+    {
+        Session::flush();
+        return redirect()->route('loginadmin');
+    }
 }
 
 
