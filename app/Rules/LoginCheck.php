@@ -4,7 +4,8 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use App\Models\UserModels;
+use App\Models\UserModel;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -18,35 +19,31 @@ class LoginCheck implements ValidationRule
 
     protected $request;
 
-    public function __construct($request)
+    public function __construct($Request)
     {
-        $this->request = $request;
+        $this->request = $Request;
     }
-    
+
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        //
         $email = $this->request->input('email');
-        $pass = $this->request->input('password');
-        $loginStatus = False;
+        $password = $this->request->input('password');
+        $loginStatus = false;
 
-        $cekemail = UserModels::where('email', $email)->count();
-        if($cekemail > 0)
-        {
-            $adminPass = UserModels::where('email', $email)->value('password');
-
-            if(Hash::check($pass, $adminPass)){
-                $loginStatus = TRUE;
+        $chekemail = UserModel::where('email', $email)->count();
+        if ($chekemail > 0) {
+            $adminPassword = UserModel::where('email', $email)->value('password');
+            if (Hash::check($password, $adminPassword)) {
+                $loginStatus = true;
             }
         }
 
-        if($loginStatus)
-        {
-            $ambilUser = UserModels::where('email', $email)->first();
-            Session::put('loginStatus', TRUE);
-            Session::put('ambilUser', $ambilUser);
+        if ($loginStatus) {
+            $ambilUser = UserModel::where('email', $email)->first();
+            session::put('loginStatus', true);
+            session::put('ambilUser', $ambilUser);
         } else {
-            $fail('email dan password salah');
+            $fail("Email dan Password Salah!");
         }
     }
 }

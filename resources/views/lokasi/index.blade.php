@@ -11,7 +11,7 @@
           <!-- general form elements -->
           <div class="card card-primary">
             <div class="card-header">
-              <h3 class="card-title">FORM REGISTER</h3>
+              <h3 class="card-title">INPUT LOKASI</h3>
             </div>
 
             @if($errors->any())
@@ -22,31 +22,14 @@
             </ul>
             @endif
 
-            <form action="{{ route('prosesregister') }}" method="POST">
+            <form action="{{ route('lokasi.store') }}" method="POST">
               <div class="card-body">
                 @csrf
                 <div class="form-group">
-                  <label>Nama</label>
-                  <input type="text" class="form-control" name="nama" placeholder="Input Nama">
-                </div>
-                <div class="form-group">
-                  <label>No HP</label>
-                  <input type="text" class="form-control" name="no_hp" placeholder="Input No HP">
-                </div>
-                <div class="form-group">
-                  <label>Email</label>
-                  <input type="email" class="form-control" name="email" placeholder="Input Email">
-                </div>
-                <div class="form-group">
-                  <label>Password</label>
-                  <input type="password" class="form-control" name="password" placeholder="Input Password" required>
-                </div>
-                <div class="form-group">
-                  <label>Konfirmasi Password</label>
-                  <input type="password" class="form-control" name="password_confirmation" placeholder="Konfirmasi Password" required>
+                  <label>Nama Lokasi</label>
+                  <input type="text" class="form-control" name="nama_lokasi" placeholder="Input Nama Lokasi">
                 </div>
               </div>
-
               <div class="card-footer">
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>
@@ -57,7 +40,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Data User</h3>
+              <h3 class="card-title">Data Lokasi</h3>
             </div>
 
             @if(session('success'))
@@ -69,22 +52,19 @@
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>Nama</th>
-                    <th>No HP</th>
-                    <th>Email</th>
+                    <th>Nama Lokasi</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach ($users as $user)
+                    <?php $no = 1; ?>
+                  @foreach ($lokasi as $dt)
                   <tr>
-                    <td>{{$user->id}}</td>
-                    <td>{{$user->nama}}</td>
-                    <td>{{$user->no_hp}}</td>
-                    <td>{{$user->email}}</td>
+                    <td>{{$no++}}</td>
+                    <td>{{$dt->nama_lokasi}}</td>
                     <td>
-                      <a href="{{ route('useredit', $user->id) }}">Edit</a> |
-                      <form action="{{ route('userdelete', $user->id) }}" method="post" style="display: inline;">
+                      <a href="{{ route('lokasi.edit', $dt->id) }}">Edit</a> |
+                      <form action="{{ route('lokasi.destroy', $dt->id) }}" method="post" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?');">Hapus</button>

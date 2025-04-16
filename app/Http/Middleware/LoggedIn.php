@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Session;
 
 class LoggedIn
 {
@@ -16,12 +16,10 @@ class LoggedIn
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $loginStatus = Session::get('loginStatus');
-        if($loginStatus == False || !$loginStatus)
-        {
+        $loginStatus = session::get('loginStatus');
+        if ($loginStatus == false || !$loginStatus) {
             return redirect()->route('loginadmin');
         }
-        
         return $next($request);
     }
 }

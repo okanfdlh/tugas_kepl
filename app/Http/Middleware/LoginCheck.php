@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Session;
 
 class LoginCheck
 {
@@ -16,12 +16,10 @@ class LoginCheck
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $loginStatus = Session::get('loginStatus');
-        if($loginStatus)
-        {
-            return redirect()->route('dashboard.admin');
+        $loginStatus = session::get('loginStatus');
+        if ($loginStatus) {
+            return redirect()->route('dashboardadmin');
         }
-
         return $next($request);
     }
 }
